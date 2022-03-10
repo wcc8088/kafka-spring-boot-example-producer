@@ -1,29 +1,33 @@
 # Spring Boot Kafka Example - The Practical Developer
 
-## Basic configuration
+## original document
+https://thepracticaldeveloper.com/spring-boot-kafka-config/
 
-This sample application shows how to use basic Spring Boot configuration to set up a producer to a topic with multiple partitions and a consumer group with three different consumers.
+* 위 소스를 변경하여 Producer와 Consumer를 분리.
 
-The complete post with details is on The Practical Developer website: [Spring Boot and Kafka - Practical Configuration Examples](https://thepracticaldeveloper.com/spring-boot-kafka-config/).
 
-[![Kafka Configuration Example](img/kafka-configuration-example.jpg)](https://thepracticaldeveloper.com/spring-boot-kafka-config/)
+>
+> Producer (8080) --> Kafka (9092) --> Consumer (8081)
+> 
 
-## Multiple serialization / deserialization formats
 
-To illustrate the different configuration options, this application deserializes Kafka messages in three different ways:
+https://github.com/wcc8088/kafka-spring-boot-example-producer
 
-* As a JSON to Java object.
-* As a simple String (plain JSON).
-* As a byte array.
+https://github.com/wcc8088/kafka-spring-boot-example-consumer
 
-## Docker compose
+## 실행 방법
 
-This code includes a `docker-compose.yml` file, so you can use Docker Compose to start up Kafka without installing anything.
+1. Kafka를 docker 로 실행 (Port : 9092)
+>$> docker-compose up -d
 
-## Was it useful?
+2. Producer 실행 (Port : 8080)
+>$> mvn spring-boot:run 
 
-Give a star to this project, and consider some extra readings:
+3. Cosumer 실행 (Port : 8081)
+>$> mvn spring-boot:run 
 
-* [My practical book about building a microservices architecture from scratch](https://amzn.to/3nADn4q).
-* [The Full Reactive Stack Guide](https://leanpub.com/full-reactive/).
-* [The Practical Architecture Guide](https://leanpub.com/practical-software-architecture).
+4. Consumer 준비 (10초 간 대기 후 응답하면 준비됨)
+>$> curl localhost:8081/hello
+
+5. Message 전송 (1번 호출 시 10개의 메시지 전송)
+>$> curl localhost:8080/hello
