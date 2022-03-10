@@ -24,30 +24,40 @@ public class HelloKafkaController {
 
     private final KafkaTemplate<String, Object> template;
     private final String topicName;
+    private final String messageSample;
     private final int messagesPerRequest;
     private CountDownLatch latch;
 
     public HelloKafkaController(
             final KafkaTemplate<String, Object> template,
             @Value("${tpd.topic-name}") final String topicName,
+            @Value("${tpd.message-sample}") final String messageSample,
             @Value("${tpd.messages-per-request}") final int messagesPerRequest) {
         this.template = template;
         this.topicName = topicName;
+        this.messageSample = messageSample;
         this.messagesPerRequest = messagesPerRequest;
     }
-
     @GetMapping("/hello")
     public String hello() throws Exception {
-        latch = new CountDownLatch(messagesPerRequest);
-        IntStream.range(0, messagesPerRequest)
-                .forEach(i -> this.template.send(topicName, String.valueOf(i),
-                        new PracticalAdvice("A Practical Advice", i))
-                );
-        latch.await(60, TimeUnit.SECONDS);
-        logger.info("All messages received");
+        for(int i=0; i<messagesPerRequest; i++)
+        {
+            this.template.send(topicName, String.valueOf(i), new PracticalAdvice(messageSample, i));
+        }
+        logger.info("All messages sent");
         return "Hello Kafka!";
     }
 
+/**    
+    @GetMapping("/hello")
+    public String hello() throws Exception {
+                .forEach(i -> this.template.send(topicName, String.valueOf(i),
+                        new PracticalAdvice("A Practical Advice", i))
+                );
+        latch.await(10, TimeUnit.SECONDS);
+        logger.info("All messages sent");
+        return "Hello Kafka!";
+    }
     @KafkaListener(topics = "advice-topic", clientIdPrefix = "json",
             containerFactory = "kafkaListenerContainerFactory")
     public void listenAsObject(ConsumerRecord<String, PracticalAdvice> cr,
@@ -74,7 +84,7 @@ public class HelloKafkaController {
                 typeIdHeader(cr.headers()), payload, cr.toString());
         latch.countDown();
     }
-
+**/
     private static String typeIdHeader(Headers headers) {
         return StreamSupport.stream(headers.spliterator(), false)
                 .filter(header -> header.key().equals("__TypeId__"))

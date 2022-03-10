@@ -1,6 +1,7 @@
 package io.tpd.kafkaexample;
 
 import org.apache.kafka.clients.admin.NewTopic;
+import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.ByteArrayDeserializer;
 import org.apache.kafka.common.serialization.StringDeserializer;
@@ -64,20 +65,20 @@ public class KafkaExampleApplication {
 
     // If you only need one kind of deserialization, you only need to set the
     // Consumer configuration properties. Uncomment this and remove all others below.
-//    @Bean
-//    public Map<String, Object> consumerConfigs() {
-//        Map<String, Object> props = new HashMap<>(
-//                kafkaProperties.buildConsumerProperties()
-//        );
+    @Bean
+    public Map<String, Object> consumerConfigs() {
+        Map<String, Object> props = new HashMap<>(
+                kafkaProperties.buildConsumerProperties()
+        );
 //        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG,
 //                StringDeserializer.class);
-//        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG,
-//                JsonDeserializer.class);
+        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG,
+                JsonDeserializer.class);
 //        props.put(ConsumerConfig.GROUP_ID_CONFIG,
 //                "tpd-loggers");
 //
-//        return props;
-//    }
+        return props;
+    }
 
     @Bean
     public ConsumerFactory<String, Object> consumerFactory() {
